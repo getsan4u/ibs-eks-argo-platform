@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-INFRA_DIR="${ROOT_DIR}/infrastructure"
+INFRA_DIR="${ROOT_DIR}/Infrastructure"
 
 cd "${INFRA_DIR}"
 

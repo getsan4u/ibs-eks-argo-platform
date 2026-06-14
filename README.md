@@ -40,6 +40,7 @@ GitOps platform repo. Provisions AWS infrastructure and bootstraps the platform 
 | `pod-identity-iam.tf` | IAM roles for AWS LBC and External Secrets via EKS Pod Identity |
 | `ecr.tf` | Shared ECR registry (`ibs-demo-apps`) with image scanning and 7-day lifecycle |
 | `secrets.tf` | Secrets Manager secrets: ArgoCD GitHub SCM token, app demo secrets |
+| `k8s.tf` | Platform namespaces, service accounts, and the ArgoCD SCM token Secret |
 
 ### Platform (ArgoCD App-of-Apps)
 
@@ -93,7 +94,7 @@ GitOps platform repo. Provisions AWS infrastructure and bootstraps the platform 
 
 ```bash
 cp Infrastructure/terraform.tfvars.example Infrastructure/terraform.tfvars
-# Edit terraform.tfvars — set aws_region, aws_profile, cluster_name, github_org
+# Edit terraform.tfvars — set aws_region, aws_profile, cluster_name, github_org, platform_repo_url
 # Set github_scm_token via env var (do NOT commit it):
 export TF_VAR_github_scm_token="ghp_..."
 
@@ -103,7 +104,7 @@ export TF_VAR_github_scm_token="ghp_..."
 The script:
 1. Runs `terraform init && apply` — provisions VPC, EKS, ECR, IAM, Secrets Manager
 2. Updates kubeconfig
-3. Installs ArgoCD via Helm
+3. Installs or upgrades ArgoCD with Helm
 4. Applies root ArgoCD Application — triggers App-of-Apps reconciliation
 
 ## Access ArgoCD
@@ -144,7 +145,7 @@ Single NAT gateway (cost-optimised for non-prod).
 
 Applications are discovered via the `prod-applicationset.yaml` SCM generator. To onboard a new app:
 
-1. Create application repo under the configured GitHub org
+1. Create application repo under the `getsan4u` GitHub org
 2. ArgoCD ApplicationSet auto-discovers it — no changes to this repo needed
 3. Add app secrets to Secrets Manager under `/prod/<app-name>/...` — External Secrets IAM policy allows `/prod/*`
 
@@ -160,6 +161,8 @@ Applications are discovered via the `prod-applicationset.yaml` SCM generator. To
 
 **EKS Pod Identity** — preferred over IRSA. IAM roles bound at pod level via service account associations in Terraform.
 
-**ArgoCD bootstrapped via Helm** — Helm installs ArgoCD out of band (not managed by ArgoCD itself). ArgoCD then takes over all subsequent platform components via App-of-Apps pattern.
+**IMDSv2 for controllers** — managed nodes require IMDSv2 tokens and allow two network hops so the AWS Load Balancer Controller can discover the cluster VPC from its pod.
+
+**ArgoCD bootstrapped via Helm** — Helm installs ArgoCD out of band. ArgoCD then takes over all subsequent platform components via the App-of-Apps pattern.
 
 **Single NAT gateway** — reduces cost for demo. Multi-AZ NAT gateways recommended for production.

@@ -7,7 +7,7 @@ spec:
   generators:
     - scmProvider:
         github:
-          organization: $github_org
+          organization: getsan4u
           allBranches: false
           tokenRef:
             secretName: github-scm-token

@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Enter your GitHub organization name (e.g., ibs):"
-read -r github_org
-
-
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-INFRA_DIR="${ROOT_DIR}/infrastructure"
+INFRA_DIR="${ROOT_DIR}/Infrastructure"
 ROOT_APP_MANIFEST="${ROOT_DIR}/platform/bootstrap/root-app.yaml"
+
+: "${TF_VAR_github_scm_token:?Set TF_VAR_github_scm_token to a GitHub token before bootstrapping}"
 
 echo "Bootstrapping prod EKS GitOps platform..."
 
@@ -23,27 +21,26 @@ AWS_PROFILE="$(terraform output -raw aws_profile)"
 aws eks update-kubeconfig \
   --region "${REGION}" \
   --name "${CLUSTER_NAME}" \
-  --profile $AWS_PROFILE
+  --profile "${AWS_PROFILE}"
 
-helm repo add argo https://argoproj.github.io/argo-helm
+helm repo add argo https://argoproj.github.io/argo-helm --force-update
 helm repo update
 
 helm upgrade --install argocd argo/argo-cd \
+  --version 9.0.0 \
   --namespace argocd \
   --create-namespace \
   --set server.service.type=LoadBalancer \
   --wait \
-  --timeout 300s\
-  --debug
-  
+  --timeout 10m
+
 echo "Waiting for ArgoCD server..."
 kubectl -n argocd wait deployment argocd-server \
   --for=condition=Available \
   --timeout=300s
 
 echo "Applying ArgoCD root app..."
-sed "s|\$github_org|${github_org}|g" "${ROOT_APP_MANIFEST}" | kubectl apply -f -
-
+kubectl apply -f "${ROOT_APP_MANIFEST}"
 
 echo "Checking ArgoCD root app..."
 kubectl -n argocd get application prod-root

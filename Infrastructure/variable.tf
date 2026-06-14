@@ -22,8 +22,9 @@ variable "platform_repo_url" {
 }
 
 variable "github_org" {
-  description = "GitHub organization for the demo app repositories"
+  description = "GitHub organization that owns the workload repositories"
   type        = string
+  default     = "getsan4u"
 }
 
 variable "github_scm_token" {

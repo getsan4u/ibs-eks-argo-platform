@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/$github_org/ibs-eks-argo-platform.git
+    repoURL: https://github.com/getsan4u/ibs-eks-argo-platform.git
     targetRevision: main
     path: platform/apps
     directory:

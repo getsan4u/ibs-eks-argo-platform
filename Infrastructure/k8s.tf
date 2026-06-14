@@ -1,11 +1,30 @@
 resource "kubernetes_namespace_v1" "argocd" {
   metadata {
     name = "argocd"
+
+    labels = {
+      name = "argocd"
+    }
   }
 
   depends_on = [
     module.eks
   ]
+}
+
+resource "kubernetes_secret_v1" "argocd_github_scm_token" {
+  count = var.github_scm_token == "" ? 0 : 1
+
+  metadata {
+    name      = "github-scm-token"
+    namespace = kubernetes_namespace_v1.argocd.metadata[0].name
+  }
+
+  type = "Opaque"
+
+  data = {
+    token = var.github_scm_token
+  }
 }
 
 resource "kubernetes_namespace_v1" "external_secrets" {

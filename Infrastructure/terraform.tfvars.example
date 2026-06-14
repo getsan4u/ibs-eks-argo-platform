@@ -1,10 +1,8 @@
 aws_region        = "ap-south-1"
-aws_profile       =  "default"
+aws_profile       = "default"
 cluster_name      = "ibs-gitops-demo"
-github_org        = "$github_org"
-platform_repo_url = "https://github.com/$github_org/ibs-eks-argo-platform.git"
+github_org        = "getsan4u"
+platform_repo_url = "https://github.com/getsan4u/ibs-eks-argo-platform.git"
 
 # Do not commit a real token.
 # Use TF_VAR_github_scm_token instead.
-github_scm_token = ""
-

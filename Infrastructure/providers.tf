@@ -21,8 +21,14 @@ provider "kubernetes" {
       "eks",
       "get-token",
       "--cluster-name",
-      module.eks.cluster_name
+      module.eks.cluster_name,
+      "--region",
+      var.aws_region
     ]
+
+    env = {
+      AWS_PROFILE = var.aws_profile
+    }
   }
 }
 
@@ -38,8 +44,14 @@ provider "helm" {
         "eks",
         "get-token",
         "--cluster-name",
-        module.eks.cluster_name
+        module.eks.cluster_name,
+        "--region",
+        var.aws_region
       ]
+
+      env = {
+        AWS_PROFILE = var.aws_profile
+      }
     }
   }
 }

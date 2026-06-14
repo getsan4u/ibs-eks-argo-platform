@@ -4,6 +4,11 @@ output "cluster_name" {
 
 output "region" {
   value = var.aws_region
+
+}
+
+output "aws_profile" {
+  value = var.aws_profile
 }
 
 output "ecr_repository_url" {

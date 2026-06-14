@@ -18,10 +18,12 @@ terraform apply -auto-approve
 
 CLUSTER_NAME="$(terraform output -raw cluster_name)"
 REGION="$(terraform output -raw region)"
+AWS_PROFILE="$(terraform output -raw aws_profile)"
 
 aws eks update-kubeconfig \
   --region "${REGION}" \
-  --name "${CLUSTER_NAME}"
+  --name "${CLUSTER_NAME}" \
+  --profile $AWS_PROFILE
 
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
@@ -31,7 +33,8 @@ helm upgrade --install argocd argo/argo-cd \
   --create-namespace \
   --set server.service.type=LoadBalancer \
   --wait \
-  --timeout 300s
+  --timeout 300s\
+  --debug
   
 echo "Waiting for ArgoCD server..."
 kubectl -n argocd wait deployment argocd-server \

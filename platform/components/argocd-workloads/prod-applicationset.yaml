@@ -8,7 +8,10 @@ spec:
     - list:
         # The GitHub SCM generator only supports organizations. Add personal
         # account repositories here after they contain the production overlay.
-        elements: []
+        elements:
+          - name: ibs-argo-rollout
+            repoURL: https://github.com/getsan4u/ibs-argo-rollout.git
+            revision: main
 
   template:
     metadata:

@@ -28,7 +28,7 @@ variable "github_org" {
 }
 
 variable "github_scm_token" {
-  description = "GitHub token for ApplicationSet SCM discovery. Do not commit this value."
+  description = "GitHub token used by ArgoCD to read private repositories. Do not commit this value."
   type        = string
   sensitive   = true
   default     = ""

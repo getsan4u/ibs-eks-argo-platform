@@ -40,7 +40,7 @@ GitOps platform repo. Provisions AWS infrastructure and bootstraps the platform 
 | `pod-identity-iam.tf` | IAM roles for AWS LBC and External Secrets via EKS Pod Identity |
 | `ecr.tf` | Shared ECR registry (`ibs-demo-apps`) with image scanning and 7-day lifecycle |
 | `secrets.tf` | Secrets Manager secrets: ArgoCD GitHub SCM token, app demo secrets |
-| `k8s.tf` | Platform namespaces, service accounts, and the ArgoCD SCM token Secret |
+| `k8s.tf` | Platform namespaces, service accounts, and ArgoCD GitHub repository credentials |
 
 ### Platform (ArgoCD App-of-Apps)
 
@@ -143,11 +143,14 @@ Single NAT gateway (cost-optimised for non-prod).
 
 ## Application onboarding
 
-Applications are discovered via the `prod-applicationset.yaml` SCM generator. To onboard a new app:
+Personal GitHub accounts are not supported by the GitHub SCM organization generator. Workload repositories are therefore registered explicitly in `platform/components/argocd-workloads/prod-applicationset.yaml`.
 
-1. Create application repo under the `getsan4u` GitHub org
-2. ArgoCD ApplicationSet auto-discovers it — no changes to this repo needed
-3. Add app secrets to Secrets Manager under `/prod/<app-name>/...` — External Secrets IAM policy allows `/prod/*`
+To onboard a new app:
+
+1. Create the repository under `getsan4u`.
+2. Add `deploy/overlays/prod/kustomization.yaml`.
+3. Add a list element containing `name`, `repoURL`, and `revision` to `prod-applicationset.yaml`.
+4. Add app secrets to Secrets Manager under `/prod/<app-name>/...`.
 
 ## Teardown
 

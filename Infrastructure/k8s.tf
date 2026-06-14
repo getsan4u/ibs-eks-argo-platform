@@ -12,18 +12,25 @@ resource "kubernetes_namespace_v1" "argocd" {
   ]
 }
 
-resource "kubernetes_secret_v1" "argocd_github_scm_token" {
+resource "kubernetes_secret_v1" "argocd_github_repo_creds" {
   count = var.github_scm_token == "" ? 0 : 1
 
   metadata {
-    name      = "github-scm-token"
+    name      = "github-repo-creds"
     namespace = kubernetes_namespace_v1.argocd.metadata[0].name
+
+    labels = {
+      "argocd.argoproj.io/secret-type" = "repo-creds"
+    }
   }
 
   type = "Opaque"
 
   data = {
-    token = var.github_scm_token
+    type     = "git"
+    url      = "https://github.com/${var.github_org}"
+    username = var.github_org
+    password = var.github_scm_token
   }
 }
 

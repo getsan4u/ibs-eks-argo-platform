@@ -5,21 +5,14 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - scmProvider:
-        github:
-          organization: getsan4u
-          allBranches: false
-          tokenRef:
-            secretName: github-scm-token
-            key: token
-
-        filters:
-          - pathsExist:
-              - deploy/overlays/prod/kustomization.yaml
+    - list:
+        # The GitHub SCM generator only supports organizations. Add personal
+        # account repositories here after they contain the production overlay.
+        elements: []
 
   template:
     metadata:
-      name: '{{ repository }}-prod'
+      name: '{{ name }}-prod'
       labels:
         environment: prod
         managed-by: applicationset
@@ -28,13 +21,13 @@ spec:
       project: prod-workloads
 
       source:
-        repoURL: '{{ url }}'
-        targetRevision: main
+        repoURL: '{{ repoURL }}'
+        targetRevision: '{{ revision }}'
         path: deploy/overlays/prod
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{ repository }}'
+        namespace: '{{ name }}'
 
       syncPolicy:
         automated:

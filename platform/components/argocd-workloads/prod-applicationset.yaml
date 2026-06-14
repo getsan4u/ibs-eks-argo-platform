@@ -12,6 +12,7 @@ spec:
           - name: ibs-argo-rollout
             repoURL: https://github.com/getsan4u/ibs-argo-rollout.git
             revision: main
+            namespace: rollouts-demo
 
   template:
     metadata:
@@ -30,7 +31,7 @@ spec:
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{ name }}'
+        namespace: '{{ namespace }}'
 
       syncPolicy:
         automated:

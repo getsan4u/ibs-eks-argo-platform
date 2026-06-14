@@ -1,0 +1,9 @@
+{
+  "enabledPlugins": {
+    "deploy-on-aws@claude-plugins-official": true,
+    "aws-core@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true
+  }
+}

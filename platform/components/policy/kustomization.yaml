@@ -1,0 +1,5 @@
+
+resources:
+  - require-resource-limits.yaml
+  - disallow-privileged-containers.yaml
+  - disallow-latest-image-tag.yaml

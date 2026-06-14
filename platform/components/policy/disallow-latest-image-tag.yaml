@@ -1,0 +1,36 @@
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-image-tag
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: disallow-latest
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+                - Deployment
+                - DaemonSet
+                - StatefulSet
+                - ReplicaSet
+                - Job
+                - CronJob
+      validate:
+        message: "Do not use the latest image tag. Use immutable tags such as Git SHA."
+        anyPattern:
+          - spec:
+              containers:
+                - image: "!*:latest"
+              initContainers:
+                - image: "!*:latest"
+          - spec:
+              template:
+                spec:
+                  containers:
+                    - image: "!*:latest"
+                  initContainers:
+                    - image: "!*:latest"

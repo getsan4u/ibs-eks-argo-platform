@@ -1,0 +1,3 @@
+resources:
+  - prod-appproject.yaml
+  - prod-applicationset.yaml

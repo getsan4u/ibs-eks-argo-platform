@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: prod-workload-repos
+  namespace: argocd
+spec:
+  generators:
+    - scmProvider:
+        github:
+          organization: $github_org
+          allBranches: false
+          tokenRef:
+            secretName: github-scm-token
+            key: token
+
+        filters:
+          - pathsExist:
+              - deploy/overlays/prod/kustomization.yaml
+
+  template:
+    metadata:
+      name: '{{ repository }}-prod'
+      labels:
+        environment: prod
+        managed-by: applicationset
+
+    spec:
+      project: prod-workloads
+
+      source:
+        repoURL: '{{ url }}'
+        targetRevision: main
+        path: deploy/overlays/prod
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ repository }}'
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+
+        syncOptions:
+          - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+          - PruneLast=true

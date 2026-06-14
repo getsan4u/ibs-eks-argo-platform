@@ -1,0 +1,60 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-resource-requests-limits
+spec:
+  validationFailureAction: Audit
+  background: true
+
+  rules:
+    - name: require-requests-limits
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+                - Deployment
+                - DaemonSet
+                - StatefulSet
+                - ReplicaSet
+                - Job
+                - CronJob
+      validate:
+        message: "Containers must define CPU/memory requests and limits."
+        anyPattern:
+          - spec:
+              containers:
+                - resources:
+                    requests:
+                      cpu: "?*"
+                      memory: "?*"
+                    limits:
+                      cpu: "?*"
+                      memory: "?*"
+              initContainers:
+                - resources:
+                    requests:
+                      cpu: "?*"
+                      memory: "?*"
+                    limits:
+                      cpu: "?*"
+                      memory: "?*"
+          - spec:
+              template:
+                spec:
+                  containers:
+                    - resources:
+                        requests:
+                          cpu: "?*"
+                          memory: "?*"
+                        limits:
+                          cpu: "?*"
+                          memory: "?*"
+                  initContainers:
+                    - resources:
+                        requests:
+                          cpu: "?*"
+                          memory: "?*"
+                        limits:
+                          cpu: "?*"
+                          memory: "?*"
